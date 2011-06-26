@@ -1,0 +1,25 @@
+# PostgreSQL. Versions 7.4 and 8.x are supported.
+
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: dr-calc_development
+  pool: 5
+  username: dr-calc
+  password: drcalc
+
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: dr-calc_test
+  pool: 5
+  username: dr-calc
+  password: drcalc
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: dr-calc_production
+  pool: 5
+  username: dr-calc
+  password: drcalc
