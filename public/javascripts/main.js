@@ -42,7 +42,6 @@ $(function(){
     },
     
     render: function() {
-      console.log(App.Calculations.toJSON());
       $(this.el).html(ich.index());
       return this;
     }
@@ -60,8 +59,7 @@ $(function(){
     },
     
     render: function() {
-      console.log(App.Calculations.toJSON());
-      $(this.el).html(ich.create());
+      $(this.el).html(ich.create(App.Calculations.toJSON()));
       return this;
     },
     
