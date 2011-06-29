@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  name: MyString
+  interest: 1.5
+  years: 1
+  starting_value: 1.5
+
+two:
+  name: MyString
+  interest: 1.5
+  years: 1
+  starting_value: 1.5
