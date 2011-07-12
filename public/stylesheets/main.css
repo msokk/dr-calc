@@ -3,8 +3,16 @@ body {
   
 }
 
-h1 {
+h1, h2, ul {
   padding: 10px;
+}
+
+h1 {
+  font-size: 26px;
+}
+
+.clear {
+ clear: both;
 }
 
 #loader {
@@ -24,4 +32,13 @@ h1 {
   border: solid 1px black;
   margin-top: 20px;
   padding: 10px;
+}
+
+#calculations {
+  list-style-type: none
+}
+
+#calculations li {
+  border-top: dashed 1px black;
+  padding: 5px;
 }

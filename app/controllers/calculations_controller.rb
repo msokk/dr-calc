@@ -23,7 +23,7 @@ class CalculationsController < ApplicationController
   def update
     @calculation = Calculation.find(params[:id])
     if @calculation.update_attributes(params[:calculation])
-      render :json => { head => ok }
+      render :json => { :status => 'ok' }
     else
       render :json => @calculation.errors, :status => :unprocessable_entity
     end
@@ -34,6 +34,6 @@ class CalculationsController < ApplicationController
     @calculation = Calculation.find(params[:id])
     @calculation.destroy
 
-    render :json => { head => ok }
+    render :json => { :status => 'ok' }
   end
 end

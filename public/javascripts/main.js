@@ -3,6 +3,59 @@ $(function(){
     loader: $('#loader')
   };
   
+  App.calculate = function(price, qnt, percent, years) {
+    var total = price * qnt;
+    percent = (percent == 0)? 0: (percent / 100);
+    var graphdata = [];
+    graphdata.push(total);
+    for(var i = 0; i < years; i++) {
+      total = total + (total * percent);
+      graphdata.push(total);
+    }
+    return { total: total, data: graphdata };
+  };
+  
+  App.drawChart = function(data) {
+    var thisYear = new Date().getFullYear();
+    var years = [];
+    for(var i = 0; i < data.length; i++) {
+      years.push(thisYear + i);
+    };
+  
+    var chart = new Highcharts.Chart({
+        credits: {
+          enabled: false
+        },
+        chart: {
+           renderTo: 'chart',
+           defaultSeriesType: 'line',
+           marginRight: 20,
+        },
+        title: {
+           text: 'Tulemus',
+           x: -20
+        },
+        xAxis: { categories: years },
+        yAxis: {
+           title: { text: 'EUR' },
+           plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+           }]
+        },
+        tooltip: {
+           formatter: function() {
+             return '<b>' + this.x +'</b>: '+ Number(this.y).toPrecision(4) +' €';
+           }
+        },
+        legend: { enabled: false },
+        series: [{ data: data }]
+     });
+  };
+  
+  
+  
   App.loader.ajaxStart(function(){
     $(this).show();
   });
@@ -41,48 +94,74 @@ $(function(){
       _.bindAll(this, "render");
     },
     
+    events: {
+      "click .deleteBtn": "remove"
+    },
+    
     render: function() {
-      $(this.el).html(ich.index());
+      $(this.el).html($('#index-tmpl').tmpl(App.Calculations));
       return this;
+    },
+    
+    remove: function(e) {
+      if(confirm('Oled kindel?')) {
+        var row = $(e.target).parent().parent(); //HACKISH
+        var id = $(row).attr('id');
+        var calculation = App.Calculations.get(id);
+        calculation.destroy();
+        $(row).remove();
+      }
     }
-
   });
   
   App.CreateView = Backbone.View.extend({
+    
+    model: null,
+  
     initialize: function() {
       _.bindAll(this, "render");
     },
     
     events: {
       "click #calculate": "save",
-      "change #createForm input": "recalculate"
+      "click #updateBtn": "update",
+      "keyup #createForm input": "recalculate"
     },
     
     render: function() {
-      $(this.el).html(ich.create(App.Calculations.toJSON()));
+      if(this.model) {
+        $(this.el).html($('#edit-tmpl').tmpl({old: this.model})); //Bit hackish
+        this.recalculate();
+      } else {
+        $(this.el).html($('#create-tmpl').tmpl());
+      }
       return this;
     },
     
+    gatherValues: function() {
+      return {
+        name: $('input#name').val() || '',
+        interest: $('input#interest').val() || 0,
+        starting_value: $('input#starting_value').val() || 0,
+        quantity: $('input#quantity').val() || 0,
+        years: $('input#years').val() || 0
+      };
+    },
+    
     save: function() {
-      var othello = App.Calculations.create({
-        name: $('input#name').val(),
-        interest: $('input#interest').val(),
-        starting_value: $('input#starting_value').val(),
-        quantity: $('input#quantity').val(),
-        years: $('input#years').val()
-      });
+      App.Calculations.create(this.gatherValues());
+    },
+    
+    update: function() {
+      this.model.set(this.gatherValues());
     },
     
     recalculate: function() {
-      var values = {
-        name: $('input#name').val(),
-        interest: $('input#interest').val(),
-        starting_value: $('input#starting_value').val(),
-        quantity: $('input#quantity').val(),
-        years: $('input#years').val()
-      };
-      
-      console.log(values);
+      var values = this.gatherValues();
+      App.drawChart(
+        App.calculate(values.starting_value, values.quantity, 
+          values.interest, values.interest).data
+      );
     }
 
   });
@@ -92,28 +171,33 @@ $(function(){
     routes: {
       "": "index",
       "create": "create",
-      "destroy/:id": "destroy",
+      "show/:id": "show",
       "edit/:id": "edit"
     },
 
     index: function() {
-      App.Calculations.fetch();
-      new App.IndexView({ el: $('#container') }).render();
+      App.Calculations.fetch({ success: function() {
+        new App.IndexView({ el: $('#container') }).render();
+      }});
     },
     
     create: function() {
       new App.CreateView({ el: $('#container') }).render();
     },
     
-    destroy: function() {
-    
+    show: function(id) {
+      //new App.ShowView({ el: $('#container') }).render();
     },
     
-    edit: function() {
-      
+    edit: function(id) {
+      App.Calculations.fetch({ success: function() { //HMM
+        new App.CreateView({ 
+          el: $('#container'),
+          model: App.Calculations.get(id)
+        }).render();
+      }});
     }
   });
-
   App.CalcController = new CalcController();
   Backbone.history.start();
 });

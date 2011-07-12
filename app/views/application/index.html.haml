@@ -1,7 +1,9 @@
 #container
 %img{ :id => "loader", :src => "images/loading.gif", :alt => "" }
   
-%script{ :id => "index", :type => "text/html" }
-  = render :partial => "ich/index.ich"
-%script{ :id => "create", :type => "text/html" }
-  = render :partial => "ich/create.ich"
+%script{ :id => "index-tmpl", :type => "text/html" }
+  = render :partial => "jqt/index.jqt"
+%script{ :id => "create-tmpl", :type => "text/html" }
+  = render :partial => "jqt/create.jqt"
+%script{ :id => "edit-tmpl", :type => "text/html" }
+  = render :partial => "jqt/edit.jqt"
