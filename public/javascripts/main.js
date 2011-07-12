@@ -60,7 +60,7 @@ $(function(){
       yAxis: {
         title: { text: 'EUR' },
         plotLines: [{ value: 0, width: 1,
-          color: '#808080' }]
+          color: '#434654' }]
       },
       tooltip: {
         formatter: function() {
@@ -145,7 +145,8 @@ $(function(){
     events: {
       'click #calculate': 'save',
       'click #updateBtn': 'update',
-      'keyup #createForm input': 'recalculate'
+      'keyup #createForm input': 'recalculate',
+      'keyup #editForm input': 'recalculate'
     },
     
     render: function(model) {
@@ -161,7 +162,7 @@ $(function(){
     
     gatherValues: function() {
       return {
-        name: $('input#name').val() || '',
+        name: $('input#name').val() || 'Arvutus',
         interest: $('input#interest').val() || 0,
         starting_value: $('input#starting_value').val() || 0,
         quantity: $('input#quantity').val() || 0,
@@ -177,13 +178,13 @@ $(function(){
       this.model.save(this.gatherValues());
     },
     
-    recalculate: function() {
+    recalculate: _.debounce(function() {
       var values = this.gatherValues();
       App.drawChart(
         App.calculate(values.starting_value, values.quantity, 
           values.interest, values.years).data
       );
-    }
+    }, 150)
 
   });
   
