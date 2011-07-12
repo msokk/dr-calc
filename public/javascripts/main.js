@@ -172,10 +172,12 @@ $(function(){
     
     save: function() {
       App.Calculations.create(this.gatherValues());
+      App.CalcRouter.navigate('', 'index');
     },
     
     update: function() {
       this.model.save(this.gatherValues());
+      App.CalcRouter.navigate('', 'index');
     },
     
     recalculate: _.debounce(function() {
